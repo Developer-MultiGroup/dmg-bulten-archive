@@ -1,0 +1,182 @@
+---
+import { getPostBySlug, getBlogPosts } from '../../lib/contentful';
+import { BLOCKS, INLINES, MARKS, type Document } from '@contentful/rich-text-types';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  try {
+    const posts = await getBlogPosts();
+    
+    if (!posts || !Array.isArray(posts)) {
+      console.warn('getBlogPosts returned invalid data:', posts);
+      return [];
+    }
+    
+    return posts.map(post => ({
+      params: { slug: String(post.fields.slug) }
+    }));
+  } catch (error) {
+    console.error('Error in getStaticPaths:', error);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+const post = await getPostBySlug(slug as string);
+
+if (!post) {
+  return Astro.redirect('/404');
+}
+
+if (!post.fields) {
+  console.error('Post fields are missing for slug:', slug);
+  return Astro.redirect('/404');
+}
+
+const { title, body, writers } = post.fields;
+const createdAt = post.sys.createdAt;
+const formattedDate = new Date(createdAt).toLocaleDateString('tr-TR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+});
+
+// Helper to extract text for reading time
+function extractTextFromRichText(node: any): string {
+  if (!node) return '';
+  if (typeof node === 'string') return node;
+  if (Array.isArray(node)) return node.map(extractTextFromRichText).join(' ');
+  if (node.nodeType === 'text') return node.value;
+  if (node.content) return extractTextFromRichText(node.content);
+  return '';
+}
+
+let readingTime = 1;
+if (body) {
+  const text = extractTextFromRichText(body);
+  const wordCount = text.trim().split(/\s+/).length;
+  readingTime = Math.max(1, Math.ceil(wordCount / 200));
+}
+
+const isValidBody =
+  typeof body === 'object' &&
+  body !== null &&
+  'nodeType' in body &&
+  body.nodeType === 'document' &&
+  Array.isArray(body.content);
+
+// Custom renderer function to convert rich text to HTML
+function renderRichTextToHtml(document: any): string {
+  if (!document || !document.content) return '';
+  
+  function renderNode(node: any): string {
+    if (!node) return '';
+    
+    switch (node.nodeType) {
+      case 'text':
+        let text = node.value || '';
+        
+        // Apply marks
+        if (node.marks && Array.isArray(node.marks)) {
+          for (const mark of node.marks) {
+            switch (mark.type) {
+              case 'bold':
+                text = `<strong>${text}</strong>`;
+                break;
+              case 'italic':
+                text = `<em>${text}</em>`;
+                break;
+              case 'underline':
+                text = `<u>${text}</u>`;
+                break;
+              case 'code':
+                text = `<code class="bg-gray-200 px-1 py-0.5 rounded text-black">${text}</code>`;
+                break;
+            }
+          }
+        }
+        return text;
+        
+      case 'paragraph':
+        const pContent = node.content ? node.content.map(renderNode).join('') : '';
+        return `<p class="mb-4 text-black">${pContent}</p>`;
+        
+      case 'heading-1':
+        const h1Content = node.content ? node.content.map(renderNode).join('') : '';
+        return `<h1 class="text-3xl font-bold mt-8 mb-4 text-black">${h1Content}</h1>`;
+        
+      case 'heading-2':
+        const h2Content = node.content ? node.content.map(renderNode).join('') : '';
+        return `<h2 class="text-2xl font-bold mt-8 mb-3 text-black">${h2Content}</h2>`;
+        
+      case 'heading-3':
+        const h3Content = node.content ? node.content.map(renderNode).join('') : '';
+        return `<h3 class="text-xl font-bold mt-6 mb-3 text-black">${h3Content}</h3>`;
+        
+      case 'unordered-list':
+        const ulContent = node.content ? node.content.map(renderNode).join('') : '';
+        return `<ul class="list-disc pl-6 mb-4 text-black">${ulContent}</ul>`;
+        
+      case 'ordered-list':
+        const olContent = node.content ? node.content.map(renderNode).join('') : '';
+        return `<ol class="list-decimal pl-6 mb-4 text-black">${olContent}</ol>`;
+        
+      case 'list-item':
+        const liContent = node.content ? node.content.map(renderNode).join('') : '';
+        return `<li class="mb-1 text-black">${liContent}</li>`;
+        
+      case 'blockquote':
+        const quoteContent = node.content ? node.content.map(renderNode).join('') : '';
+        return `<blockquote class="border-l-4 border-accent pl-4 italic my-4 text-black bg-gray-100">${quoteContent}</blockquote>`;
+        
+      case 'hr':
+        return `<hr class="my-8 border-gray-300" />`;
+        
+      case 'hyperlink':
+        const linkContent = node.content ? node.content.map(renderNode).join('') : '';
+        return `<a href="${node.data.uri}" class="text-blue-700 hover:underline" target="_blank" rel="noopener noreferrer">${linkContent}</a>`;
+        
+      default:
+        // For any unhandled node types, try to render their content
+        if (node.content && Array.isArray(node.content)) {
+          return node.content.map(renderNode).join('');
+        }
+        return '';
+    }
+  }
+  
+  // Render all top-level nodes
+  return document.content.map(renderNode).join('');
+}
+
+// Generate HTML from the rich text body
+let html = '';
+if (isValidBody) {
+  html = renderRichTextToHtml(body);
+}
+---
+
+<Layout>
+  <main class="min-h-screen px-6 pt-[25vh] pb-12 font-montserrat-mid bg-white text-black">
+    <div class="max-w-3xl mx-auto">
+      {writers && Array.isArray(writers) && writers.length > 0 && (
+        <p class="text-sm mb-2 text-accent text-left md:text-center">
+          {writers.length === 1 ? 'Yazar:' : 'Yazarlar:'} {writers.join(', ')}
+        </p>
+      )}
+      <p class="text-sm mb-5 text-accent text-left md:text-center">
+        {formattedDate} <span class="mx-2">•</span> {readingTime} dk okuma süresi
+      </p>
+      <h1 class="text-4xl font-extrabold font-montserrat text-secondary mb-15 text-left md:text-center">
+        {typeof title === 'string' ? title : 'Untitled'}
+      </h1>
+      <article class="prose prose-lg max-w-none text-black">
+        {isValidBody && typeof html === 'string' ? (
+          <div set:html={html} />
+        ) : (
+          <p class="text-red-500">Blog içeriği geçersiz veya eksik.</p>
+        )}
+      </article>
+    </div>
+  </main>
+</Layout>
