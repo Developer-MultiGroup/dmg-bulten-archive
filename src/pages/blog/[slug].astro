@@ -196,8 +196,9 @@ if (isValidBody) {
 ---
 
 <Layout>
-  <main class="min-h-screen px-6 pt-[25vh] pb-12 font-montserrat-mid bg-white text-black">
+  <main class="min-h-screen px-6 pt-12 pb-12 font-montserrat-mid bg-white text-black">
     <div class="max-w-3xl mx-auto">
+      <a href="/" class="inline-block mb-6 text-accent hover:underline text-sm font-semibold">← Geri Dön</a>
       {writers && Array.isArray(writers) && writers.length > 0 && (
         <p class="text-sm mb-2 text-accent text-left md:text-center">
           {writers.length === 1 ? 'Yazar:' : 'Yazarlar:'} {writers.join(', ')}
