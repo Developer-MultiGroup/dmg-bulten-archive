@@ -7,12 +7,27 @@ import "../styles/global.css";
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="/favicon-gray.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>MultiGroup Bülten Arşivi</title>
 	</head>
 	<body>
 		<slot />
+		<script>
+			const favicon = document.getElementById('dynamic-favicon') as HTMLLinkElement | null;
+			const redFavicon = '/favicon-red.svg';
+			const grayFavicon = '/favicon-gray.svg';
+
+			function setFavicon(active: boolean) {
+				if (favicon) {
+					favicon.href = active ? redFavicon : grayFavicon;
+				}
+			}
+
+			window.addEventListener('focus', () => setFavicon(true));
+			window.addEventListener('blur', () => setFavicon(false));
+			setFavicon(document.hasFocus());
+		</script>
 	</body>
 </html>
 
