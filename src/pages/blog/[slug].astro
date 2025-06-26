@@ -136,6 +136,45 @@ function renderRichTextToHtml(document: any): string {
         const linkContent = node.content ? node.content.map(renderNode).join('') : '';
         return `<a href="${node.data.uri}" class="text-blue-700 hover:underline" target="_blank" rel="noopener noreferrer">${linkContent}</a>`;
         
+      case 'embedded-asset-block':
+        // Handle embedded images from Contentful
+        if (node.data && node.data.target && node.data.target.fields) {
+          const asset = node.data.target;
+          const fields = asset.fields;
+          
+          if (fields.file && fields.file.url) {
+            const imageUrl = fields.file.url.startsWith('//') 
+              ? `https:${fields.file.url}` 
+              : fields.file.url;
+            
+            const altText = fields.description || fields.title || 'Blog image';
+            const width = fields.file.details?.image?.width;
+            const height = fields.file.details?.image?.height;
+            
+            // Smaller, left-aligned image
+            return `
+              <figure class="my-4">
+                <img 
+                  src="${imageUrl}" 
+                  alt="${altText}"
+                  class="max-w-xs h-auto rounded shadow-md"
+                  ${width ? `width="${width}"` : ''}
+                  ${height ? `height="${height}"` : ''}
+                  loading="lazy"
+                />
+                ${fields.description ? `<figcaption class="text-sm text-gray-600 mt-1 italic">${fields.description}</figcaption>` : ''}
+              </figure>
+            `;
+          }
+        }
+        return '';
+        
+      case 'embedded-entry-block':
+        // Handle other embedded content types if needed
+        return `<div class="my-4 p-4 bg-gray-100 rounded border-l-4 border-accent">
+          <p class="text-sm text-gray-600">Embedded content</p>
+        </div>`;
+        
       default:
         // For any unhandled node types, try to render their content
         if (node.content && Array.isArray(node.content)) {
