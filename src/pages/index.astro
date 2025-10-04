@@ -30,7 +30,12 @@ const categories = Array.from(new Set(posts.map(post => post.fields.category).fi
 const allCategories = ["Tümü", ...categories];
 ---
 
-<Layout>
+<Layout 
+  title="MultiGroup Bülten Arşivi"
+  description="MultiGroup Developer Community'nin bülten arşivi. Yazılım geliştirme, teknoloji ve developer deneyimleri hakkında kaliteli içerikler."
+  ogImage="/opengraph-image.png"
+  ogImageAlt="MultiGroup Bülten Arşivi"
+>
   <main class="min-h-screen bg-white text-black font-montserrat">
     <!-- Header Section -->
     <header class="px-4 pt-18 pb-8 flex flex-col items-center">

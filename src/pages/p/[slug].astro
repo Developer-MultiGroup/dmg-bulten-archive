@@ -48,6 +48,12 @@ const formattedDate = date ?
   });
 const coverUrl = (cover as any)?.fields?.file?.url;
 
+// Prepare OG image URL
+const ogImageUrl = coverUrl ? `https:${coverUrl}` : '/opengraph-image.png';
+const ogImageAlt = coverUrl ? String(title) || 'Blog Post Image' : 'MultiGroup Logo';
+
+const postDescription = `MultiGroup tarafından yayınlanan "${String(title) || 'Untitled'}" başlıklı blog yazısı.`;
+
 // Helper to extract text for reading time
 function extractTextFromRichText(node: any): string {
   if (!node) return '';
@@ -202,7 +208,13 @@ if (isValidBody) {
 }
 ---
 
-<Layout>
+<Layout 
+  title={String(title) || 'Untitled'}
+  description={postDescription}
+  ogImage={ogImageUrl}
+  ogImageAlt={ogImageAlt}
+  ogType="article"
+>
   <!-- Reading Progress Bar -->
   <div id="readingProgress" class="fixed top-0 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 z-50">
     <div id="progressBar" class="h-full bg-red-600 transition-all duration-150 ease-out" style="width: 0%"></div>

@@ -1,5 +1,23 @@
 ---
 import "../styles/global.css";
+
+export interface Props {
+	title?: string;
+	description?: string;
+	ogImage?: string;
+	ogImageAlt?: string;
+	ogUrl?: string;
+	ogType?: string;
+}
+
+const {
+	title = "MultiGroup Bülten Arşivi",
+	description = "MultiGroup Developer Community'nin bülten arşivi. Yazılım geliştirme, teknoloji ve developer deneyimleri hakkında kaliteli içerikler.",
+	ogImage = "/opengraph-image.png",
+	ogImageAlt = "MultiGroup Logo",
+	ogUrl = Astro.url.href,
+	ogType = "website"
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -9,7 +27,31 @@ import "../styles/global.css";
 		<meta name="viewport" content="width=device-width" />
 		<link id="dynamic-favicon" rel="icon" type="image/svg+xml" href="/favicon-gray.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>MultiGroup Bülten Arşivi</title>
+		
+		<!-- Basic Meta Tags -->
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		
+		<!-- Open Graph Meta Tags -->
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:image:alt" content={ogImageAlt} />
+		<meta property="og:url" content={ogUrl} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:site_name" content="MultiGroup Bülten Arşivi" />
+		
+		<!-- Twitter Card Meta Tags -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:image:alt" content={ogImageAlt} />
+		
+		<!-- Additional Meta Tags -->
+		<meta name="robots" content="index, follow" />
+		<meta name="author" content="MultiGroup" />
+		<meta name="language" content="tr" />
 	</head>
 	<body>
 		<slot />
