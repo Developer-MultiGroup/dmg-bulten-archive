@@ -91,7 +91,7 @@ const allCategories = ["Tümü", ...categories];
       <!-- Category Filter and Search Bar -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
         <!-- Category Filter -->
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap gap-4 order-2 md:order-1">
           {allCategories.map((category) => (
             <button
               class="category-filter px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors"
@@ -103,12 +103,12 @@ const allCategories = ["Tümü", ...categories];
         </div>
         
         <!-- Search Bar -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 order-1 md:order-2">
           <input
             id="searchInput"
             type="text"
             placeholder="Ara..."
-            class="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+            class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
             autocomplete="off"
           />
         </div>
