@@ -43,60 +43,65 @@ const allCategories = ["Tümü", ...categories];
       <p class="italic text-center text-gray-500 text-lg mb-4">
         "Where Developers Become Together"
       </p>
-      <div class="flex gap-2 justify-center items-center mb-8 text-sm md:text-base text-gray-600">
-        <a
-          href="https://links.devmultigroup.com/"
-          aria-label="Instagram"
-          class="hover:text-red-600 transition-all duration-300"
-          target="_blank"
-        >
-          Biz Kimiz?
-        </a>
-        <span>/</span>
-        <a
-          href="https://www.instagram.com/devmultigroup/"
-          aria-label="Instagram"
-          class="hover:text-red-600 transition-all duration-300"
-          target="_blank"
-        >
-          Instagram
-        </a>
-        <span>/</span>
-        <a
-          href="https://x.com/devmultigroup"
-          aria-label="X"
-          class="hover:text-red-600 transition-all duration-300"
-          target="_blank"
-        >
-          Twitter
-        </a>
-        <span>/</span>
-        <a
-          href="https://www.linkedin.com/company/devmultigroup/"
-          aria-label="LinkedIn"
-          class="hover:text-red-600 transition-all duration-300"
-          target="_blank"
-        >
-          LinkedIn
-        </a>
-        <span>/</span>
-        <a
-          href="https://github.com/Developer-MultiGroup"
-          aria-label="Github"
-          class="hover:text-red-600 transition-all duration-300"
-          target="_blank"
-        >
-          Github
-        </a>
-        <span>/</span>
-        <a
-          href="https://etkinlik.devmultigroup.com/"
-          aria-label="Etkinlikler"
-          class="hover:text-red-600 transition-all duration-300"
-          target="_blank"
-        >
-          Etkinlikler
-        </a>
+      <div class="flex flex-col gap-2 justify-center items-center mb-8 text-sm md:text-base text-gray-600">
+        <!-- First row -->
+        <div class="flex gap-2 justify-center items-center">
+          <a
+            href="https://links.devmultigroup.com/"
+            aria-label="Instagram"
+            class="hover:text-red-600 transition-all duration-300"
+            target="_blank"
+          >
+            Biz Kimiz?
+          </a>
+          <span>/</span>
+          <a
+            href="https://www.instagram.com/devmultigroup/"
+            aria-label="Instagram"
+            class="hover:text-red-600 transition-all duration-300"
+            target="_blank"
+          >
+            Instagram
+          </a>
+          <span>/</span>
+          <a
+            href="https://x.com/devmultigroup"
+            aria-label="X"
+            class="hover:text-red-600 transition-all duration-300"
+            target="_blank"
+          >
+            Twitter
+          </a>
+        </div>
+        <!-- Second row -->
+        <div class="flex gap-2 justify-center items-center">
+          <a
+            href="https://www.linkedin.com/company/devmultigroup/"
+            aria-label="LinkedIn"
+            class="hover:text-red-600 transition-all duration-300"
+            target="_blank"
+          >
+            LinkedIn
+          </a>
+          <span>/</span>
+          <a
+            href="https://github.com/Developer-MultiGroup"
+            aria-label="Github"
+            class="hover:text-red-600 transition-all duration-300"
+            target="_blank"
+          >
+            Github
+          </a>
+          <span>/</span>
+          <a
+            href="https://etkinlik.devmultigroup.com/"
+            aria-label="Etkinlikler"
+            class="hover:text-red-600 transition-all duration-300"
+            target="_blank"
+          >
+            Etkinlikler
+          </a>
+        </div>
       </div>
     </header>
 
@@ -104,8 +109,33 @@ const allCategories = ["Tümü", ...categories];
     <div class="max-w-6xl mx-auto px-4">
       <!-- Category Filter and Search Bar -->
       <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-        <!-- Category Filter -->
-        <div class="flex flex-wrap gap-4 order-2 md:order-1">
+        <!-- Mobile: Search Bar + Dropdown (2:1 ratio) -->
+        <div class="flex gap-2 md:hidden">
+          <div class="flex-1">
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Ara..."
+              class="w-full h-10 px-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
+              autocomplete="off"
+            />
+          </div>
+          <div class="w-1/3">
+            <select
+              id="categoryDropdown"
+              class="w-full h-10 px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+            >
+              {allCategories.map((category) => (
+                <option value={category === "Tümü" ? "" : String(category)}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <!-- Desktop: Category Filter -->
+        <div class="hidden md:flex flex-wrap gap-4 order-2 md:order-1">
           {allCategories.map((category) => (
             <button
               class="category-filter px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors"
@@ -116,10 +146,10 @@ const allCategories = ["Tümü", ...categories];
           ))}
         </div>
         
-        <!-- Search Bar -->
-        <div class="flex items-center gap-2 order-1 md:order-2">
+        <!-- Desktop: Search Bar -->
+        <div class="hidden md:flex items-center gap-2 order-1 md:order-2">
           <input
-            id="searchInput"
+            id="searchInputDesktop"
             type="text"
             placeholder="Ara..."
             class="w-full md:w-auto px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -223,9 +253,10 @@ const allCategories = ["Tümü", ...categories];
   
   function filterPosts() {
     const searchInput = document.getElementById('searchInput') as HTMLInputElement;
-    if (!searchInput) return;
+    const searchInputDesktop = document.getElementById('searchInputDesktop') as HTMLInputElement;
     
-    const searchTerm = searchInput.value.toLowerCase().trim();
+    // Get search term from either mobile or desktop input
+    const searchTerm = (searchInput?.value || searchInputDesktop?.value || '').toLowerCase().trim();
     const posts = document.querySelectorAll('.blog-item') as NodeListOf<HTMLElement>;
     
     posts.forEach(post => {
@@ -269,27 +300,47 @@ const allCategories = ["Tümü", ...categories];
   
   // Initialize everything when DOM is ready
   document.addEventListener('DOMContentLoaded', () => {
-    // Set up search input event listeners
+    // Set up search input event listeners (both mobile and desktop)
     const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+    const searchInputDesktop = document.getElementById('searchInputDesktop') as HTMLInputElement;
+    
     if (searchInput) {
-      // Multiple event types for better compatibility
       searchInput.addEventListener('input', filterPosts);
       searchInput.addEventListener('keyup', filterPosts);
       searchInput.addEventListener('change', filterPosts);
     }
     
-    // Set up category filter buttons
+    if (searchInputDesktop) {
+      searchInputDesktop.addEventListener('input', filterPosts);
+      searchInputDesktop.addEventListener('keyup', filterPosts);
+      searchInputDesktop.addEventListener('change', filterPosts);
+    }
+    
+    // Set up category dropdown (mobile)
+    const categoryDropdown = document.getElementById('categoryDropdown') as HTMLSelectElement;
+    if (categoryDropdown) {
+      categoryDropdown.addEventListener('change', () => {
+        setActiveCategory(categoryDropdown.value);
+      });
+    }
+    
+    // Set up category filter buttons (desktop)
     document.querySelectorAll('.category-filter').forEach(btn => {
       btn.addEventListener('click', () => {
         setActiveCategory((btn as HTMLElement).dataset.category || '');
       });
     });
     
-    // Set initial active state for "Tümü" button
+    // Set initial active state for "Tümü" button (desktop)
     const allBtn = document.querySelector('[data-category=""]');
     if (allBtn) {
       allBtn.classList.add('bg-red-600', 'text-white');
       allBtn.classList.remove('border-gray-300', 'hover:bg-gray-50');
+    }
+    
+    // Set initial dropdown value (mobile)
+    if (categoryDropdown) {
+      categoryDropdown.value = '';
     }
     
     // Initial filter to show all posts
