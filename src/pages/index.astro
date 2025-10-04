@@ -43,7 +43,8 @@ const allCategories = ["Tümü", ...categories];
       <p class="italic text-center text-gray-500 text-lg mb-4">
         "Where Developers Become Together"
       </p>
-      <div class="flex flex-col gap-2 justify-center items-center mb-8 text-sm md:text-base text-gray-600">
+      <!-- Mobile: 2-row navigation -->
+      <div class="flex flex-col gap-2 justify-center items-center mb-8 text-sm text-gray-600 md:hidden">
         <!-- First row -->
         <div class="flex gap-2 justify-center items-center">
           <a
@@ -102,6 +103,63 @@ const allCategories = ["Tümü", ...categories];
             Etkinlikler
           </a>
         </div>
+      </div>
+
+      <!-- Desktop: Single row navigation -->
+      <div class="hidden md:flex gap-2 justify-center items-center mb-8 text-sm md:text-base text-gray-600">
+        <a
+          href="https://links.devmultigroup.com/"
+          aria-label="Instagram"
+          class="hover:text-red-600 transition-all duration-300"
+          target="_blank"
+        >
+          Biz Kimiz?
+        </a>
+        <span>/</span>
+        <a
+          href="https://www.instagram.com/devmultigroup/"
+          aria-label="Instagram"
+          class="hover:text-red-600 transition-all duration-300"
+          target="_blank"
+        >
+          Instagram
+        </a>
+        <span>/</span>
+        <a
+          href="https://x.com/devmultigroup"
+          aria-label="X"
+          class="hover:text-red-600 transition-all duration-300"
+          target="_blank"
+        >
+          Twitter
+        </a>
+        <span>/</span>
+        <a
+          href="https://www.linkedin.com/company/devmultigroup/"
+          aria-label="LinkedIn"
+          class="hover:text-red-600 transition-all duration-300"
+          target="_blank"
+        >
+          LinkedIn
+        </a>
+        <span>/</span>
+        <a
+          href="https://github.com/Developer-MultiGroup"
+          aria-label="Github"
+          class="hover:text-red-600 transition-all duration-300"
+          target="_blank"
+        >
+          Github
+        </a>
+        <span>/</span>
+        <a
+          href="https://etkinlik.devmultigroup.com/"
+          aria-label="Etkinlikler"
+          class="hover:text-red-600 transition-all duration-300"
+          target="_blank"
+        >
+          Etkinlikler
+        </a>
       </div>
     </header>
 
