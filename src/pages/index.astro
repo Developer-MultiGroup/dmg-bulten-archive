@@ -151,7 +151,7 @@ const allCategories = ["Tümü", ...categories];
                 data-writers={Array.isArray(writers) ? writers.join(", ") : ""}
                 data-category={category || ""}
               >
-                <a href={`/blog/${post.fields.slug}`} class="block group">
+                <a href={`/p/${post.fields.slug}`} class="block group">
                   <!-- Cover Image -->
                   <div class="aspect-[16/9] bg-gray-100 overflow-hidden">
                     {coverUrl ? (
