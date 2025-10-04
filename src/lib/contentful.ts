@@ -11,13 +11,19 @@ export const getBlogPosts = async (): Promise<Entry<BlogPostSkeleton>[]> => {
   const res = await client.getEntries<BlogPostSkeleton>({
     content_type: "dmgBulten",
     include: 2, // Include linked assets (for cover images)
-    // Add cache-busting parameter
     limit: 1000, // Set a high limit to get all posts
   });
 
-  console.log(res.items);
+  // Sort by custom date field (newest first)
+  const sortedItems = res.items.sort((a, b) => {
+    const dateA = a.fields.date ? new Date(String(a.fields.date)).getTime() : new Date(a.sys.createdAt).getTime();
+    const dateB = b.fields.date ? new Date(String(b.fields.date)).getTime() : new Date(b.sys.createdAt).getTime();
+    return dateB - dateA; // Newest first
+  });
 
-  return res.items;
+  console.log(sortedItems);
+
+  return sortedItems;
 };
 
 export const getPostBySlug = async (

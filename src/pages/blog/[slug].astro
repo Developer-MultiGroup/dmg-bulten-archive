@@ -36,7 +36,7 @@ if (!post.fields) {
 const { title, body, writers, cover, date } = post.fields;
 const createdAt = post.sys.createdAt;
 const formattedDate = date ? 
-  new Date(date).toLocaleDateString('tr-TR', {
+  new Date(String(date)).toLocaleDateString('tr-TR', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -46,7 +46,7 @@ const formattedDate = date ?
     month: 'long',
     year: 'numeric',
   });
-const coverUrl = cover?.fields?.file?.url;
+const coverUrl = (cover as any)?.fields?.file?.url;
 
 // Helper to extract text for reading time
 function extractTextFromRichText(node: any): string {
@@ -203,6 +203,11 @@ if (isValidBody) {
 ---
 
 <Layout>
+  <!-- Reading Progress Bar -->
+  <div id="readingProgress" class="fixed top-0 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 z-50">
+    <div id="progressBar" class="h-full bg-red-600 transition-all duration-150 ease-out" style="width: 0%"></div>
+  </div>
+  
   <main class="min-h-screen px-6 pt-12 pb-12 font-montserrat-mid bg-white text-black">
     <div class="max-w-3xl mx-auto">
       <a href="/" class="inline-block mb-6 text-accent hover:underline text-sm font-semibold">← Geri Dön</a>
@@ -212,7 +217,7 @@ if (isValidBody) {
         <div class="mb-8">
           <img
             src={`https:${coverUrl}`}
-            alt={title}
+            alt={String(title) || 'Untitled'}
             class="w-full h-auto rounded-lg shadow-lg"
             loading="eager"
           />
@@ -241,3 +246,45 @@ if (isValidBody) {
     </div>
   </main>
 </Layout>
+
+<script>
+  // Reading Progress Bar
+  function updateReadingProgress() {
+    const progressBar = document.getElementById('progressBar');
+    if (!progressBar) return;
+    
+    // Get scroll position
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    // Get document height
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    
+    // Calculate scroll percentage
+    const scrollPercent = (scrollTop / docHeight) * 100;
+    
+    // Update progress bar width
+    progressBar.style.width = `${Math.min(100, Math.max(0, scrollPercent))}%`;
+  }
+  
+  // Initialize progress bar
+  document.addEventListener('DOMContentLoaded', () => {
+    updateReadingProgress();
+    
+    // Update on scroll with throttling for better performance
+    let ticking = false;
+    function requestTick() {
+      if (!ticking) {
+        requestAnimationFrame(updateReadingProgress);
+        ticking = true;
+      }
+    }
+    
+    function handleScroll() {
+      ticking = false;
+      requestTick();
+    }
+    
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', updateReadingProgress);
+  });
+</script>
