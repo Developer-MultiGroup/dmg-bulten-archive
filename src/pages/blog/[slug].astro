@@ -33,13 +33,20 @@ if (!post.fields) {
   return Astro.redirect('/404');
 }
 
-const { title, body, writers } = post.fields;
+const { title, body, writers, cover, date } = post.fields;
 const createdAt = post.sys.createdAt;
-const formattedDate = new Date(createdAt).toLocaleDateString('tr-TR', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-});
+const formattedDate = date ? 
+  new Date(date).toLocaleDateString('tr-TR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }) :
+  new Date(createdAt).toLocaleDateString('tr-TR', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+const coverUrl = cover?.fields?.file?.url;
 
 // Helper to extract text for reading time
 function extractTextFromRichText(node: any): string {
@@ -199,6 +206,19 @@ if (isValidBody) {
   <main class="min-h-screen px-6 pt-12 pb-12 font-montserrat-mid bg-white text-black">
     <div class="max-w-3xl mx-auto">
       <a href="/" class="inline-block mb-6 text-accent hover:underline text-sm font-semibold">← Geri Dön</a>
+      
+      <!-- Cover Image -->
+      {coverUrl && (
+        <div class="mb-8">
+          <img
+            src={`https:${coverUrl}`}
+            alt={title}
+            class="w-full h-auto rounded-lg shadow-lg"
+            loading="eager"
+          />
+        </div>
+      )}
+      
       {writers && Array.isArray(writers) && writers.length > 0 && (
         <p class="text-sm mb-2 text-accent text-left md:text-center">
           {writers.length === 1 ? 'Yazar:' : 'Yazarlar:'} {writers.join(', ')}
@@ -207,7 +227,8 @@ if (isValidBody) {
       <p class="text-sm mb-5 text-accent text-left md:text-center">
         {formattedDate} <span class="mx-2">•</span> {readingTime} dk okuma süresi
       </p>
-      <h1 class="text-4xl font-extrabold font-montserrat text-secondary mb-15 text-left md:text-center">
+      
+      <h1 class="text-4xl font-extrabold font-montserrat text-secondary mb-8 text-left md:text-center">
         {typeof title === 'string' ? title : 'Untitled'}
       </h1>
       <article class="prose prose-lg max-w-none text-black">

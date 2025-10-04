@@ -10,6 +10,7 @@ const client = createClient({
 export const getBlogPosts = async (): Promise<Entry<BlogPostSkeleton>[]> => {
   const res = await client.getEntries<BlogPostSkeleton>({
     content_type: "dmgBulten",
+    include: 2, // Include linked assets (for cover images)
   });
 
   console.log(res.items);
@@ -25,6 +26,7 @@ export const getPostBySlug = async (
     // 👇 safely assert it as any
     "fields.slug": slug,
     locale: 'en-US',
+    include: 2, // Include linked assets (for cover images)
   } as any); // acceptable in this specific case
 
   return res.items[0] ?? null;
