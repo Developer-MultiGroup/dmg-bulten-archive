@@ -121,7 +121,7 @@ const allCategories = ["Tümü", ...categories];
             const { title, description, writers, body, cover, category, date } = post.fields;
             const createdAt = post.sys.createdAt;
             const formattedDate = date ? 
-              new Date(date).toLocaleDateString("tr-TR", {
+              new Date(date as unknown as string).toLocaleDateString("tr-TR", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
@@ -132,11 +132,11 @@ const allCategories = ["Tümü", ...categories];
                 day: "numeric",
               });
             const readingTime = getReadingTime(body);
-            const coverUrl = cover?.fields?.file?.url;
+            const coverUrl = (cover as any)?.fields?.file?.url;
             
             return (
               <article
-                class="blog-item border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                class="blog-item border border-gray-200 rounded-lg overflow-hidden hover:border-red-500 hover:shadow-lg transition-all duration-300"
                 data-title={title}
                 data-description={description}
                 data-writers={Array.isArray(writers) ? writers.join(", ") : ""}
@@ -148,8 +148,8 @@ const allCategories = ["Tümü", ...categories];
                     {coverUrl ? (
                       <img
                         src={`https:${coverUrl}`}
-                        alt={title}
-                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        alt={String(title) || "Untitled Post"}
+                        class="w-full h-full object-cover"
                       />
                     ) : (
                       <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
@@ -204,11 +204,11 @@ const allCategories = ["Tümü", ...categories];
   let currentCategory = "";
   
   function filterPosts() {
-    const searchInput = document.getElementById('searchInput');
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
     if (!searchInput) return;
     
     const searchTerm = searchInput.value.toLowerCase().trim();
-    const posts = document.querySelectorAll('.blog-item');
+    const posts = document.querySelectorAll('.blog-item') as NodeListOf<HTMLElement>;
     
     posts.forEach(post => {
       const title = post.dataset.title?.toLowerCase() || '';
@@ -231,7 +231,7 @@ const allCategories = ["Tümü", ...categories];
     });
   }
   
-  function setActiveCategory(category) {
+  function setActiveCategory(category: string) {
     currentCategory = category;
     
     // Update active button styling
@@ -252,7 +252,7 @@ const allCategories = ["Tümü", ...categories];
   // Initialize everything when DOM is ready
   document.addEventListener('DOMContentLoaded', () => {
     // Set up search input event listeners
-    const searchInput = document.getElementById('searchInput');
+    const searchInput = document.getElementById('searchInput') as HTMLInputElement;
     if (searchInput) {
       // Multiple event types for better compatibility
       searchInput.addEventListener('input', filterPosts);
@@ -263,7 +263,7 @@ const allCategories = ["Tümü", ...categories];
     // Set up category filter buttons
     document.querySelectorAll('.category-filter').forEach(btn => {
       btn.addEventListener('click', () => {
-        setActiveCategory(btn.dataset.category);
+        setActiveCategory((btn as HTMLElement).dataset.category || '');
       });
     });
     

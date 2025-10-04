@@ -11,6 +11,8 @@ export const getBlogPosts = async (): Promise<Entry<BlogPostSkeleton>[]> => {
   const res = await client.getEntries<BlogPostSkeleton>({
     content_type: "dmgBulten",
     include: 2, // Include linked assets (for cover images)
+    // Add cache-busting parameter
+    limit: 1000, // Set a high limit to get all posts
   });
 
   console.log(res.items);
@@ -27,6 +29,7 @@ export const getPostBySlug = async (
     "fields.slug": slug,
     locale: 'en-US',
     include: 2, // Include linked assets (for cover images)
+    limit: 1, // Only need one post
   } as any); // acceptable in this specific case
 
   return res.items[0] ?? null;
