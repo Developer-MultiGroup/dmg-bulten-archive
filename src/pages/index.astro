@@ -177,7 +177,11 @@ const allCategories = ["Tümü", ...categories];
                     <!-- Metadata -->
                     <div class="flex items-center justify-between mb-2">
                       <span class="text-xs text-gray-500">
-                        {Array.isArray(writers) && writers.length > 0 ? `${writers.length} yazar` : "1 yazar"} · {formattedDate}
+                        {Array.isArray(writers) && writers.length > 0 
+                          ? writers.length === 1 
+                            ? writers[0] 
+                            : `${writers.length} yazar`
+                          : "Yazar bilgisi yok"} · {formattedDate}
                       </span>
                       <span class="text-xs text-gray-400">{readingTime} dk</span>
                     </div>
